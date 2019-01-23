@@ -48,7 +48,12 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
-        public static IEnumerable<object[]> GenerateMegaCorp(int depth = 0)
+        public static IEnumerable<object[]> GenerateMegaCorp()
+        {
+            return GenerateMegaCorp(0);
+        }
+
+        public static IEnumerable<object[]> GenerateMegaCorp(int depth)
         {
             List<object[]> list = new List<object[]>
             {
@@ -58,7 +63,12 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
-        public static IEnumerable<object[]> GenerateMegaCorpAndWageSlave(int wageSlaveDepth = 0)
+        public static IEnumerable<object[]> GenerateMegaCorpAndWageSlave()
+        {
+            return GenerateMegaCorpAndWageSlave(0);
+        }
+
+        public static IEnumerable<object[]> GenerateMegaCorpAndWageSlave(int wageSlaveDepth)
         {
             wageSlaveDepth = wageSlaveDepth >= 0 ? wageSlaveDepth : GenerateSemiRandomSize();
 
@@ -70,7 +80,12 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
-        public static IEnumerable<object[]> GenerateMegaCorpAndFatCat(int fatCatDepth = 0)
+        public static IEnumerable<object[]> GenerateMegaCorpAndFatCat()
+        {
+            return GenerateMegaCorpAndFatCat(0);
+        }
+
+        public static IEnumerable<object[]> GenerateMegaCorpAndFatCat(int fatCatDepth)
         {
             fatCatDepth = fatCatDepth >= 0 ? fatCatDepth : GenerateSemiRandomSize();
 
@@ -82,7 +97,12 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
-        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalist(int capitalistDepth, int megaCorpDepth = 0)
+        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalist(int capitalistDepth)
+        {
+            return GenerateMegaCorpAndCapitalist(capitalistDepth, 0);
+        }
+
+        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalist(int capitalistDepth, int megaCorpDepth)
         {
             capitalistDepth = capitalistDepth >= 0 ? capitalistDepth : GenerateSemiRandomSize();
 
@@ -94,7 +114,7 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
-        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalists(int capitalistDepth)
+        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalists()
         {
             List<object[]> list = new List<object[]>
             {
