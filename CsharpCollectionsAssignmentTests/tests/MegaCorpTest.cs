@@ -10,13 +10,6 @@ namespace CsharpCollectionsAssignmentTests.tests
 {
     public class MegaCorpTest
     {
-        private readonly ITestOutputHelper output;
-
-        public MegaCorpTest(ITestOutputHelper output)
-        {
-            this.output = output;
-            // output.WriteLine("Test if it reaches here.");
-        }
 
         [Theory]
         [MemberData(nameof(MemberDataAggregator.GenerateMegaCorp), MemberType = typeof(MemberDataAggregator))]
@@ -46,12 +39,12 @@ namespace CsharpCollectionsAssignmentTests.tests
         public void AddHasCapitalistWithParent(MegaCorp megaCorp, ICapitalist capitalist)
         {
             Assert.True(megaCorp.Add(capitalist), "#Add() returned false when called with a Capitalist");
-            Assert.True(megaCorp.Has(capitalist), "#Has() returned false when called with the parent of the Capitalist that was just added");
             Assert.True(megaCorp.Has(capitalist), "#Has() returned false when called with the Capitalist that was just added");
+            Assert.True(megaCorp.Has(capitalist.GetParent()), "#Has() returned false when called with the parent of the Capitalist that was just added");
         }
 
         [Theory]
-        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), MemberType = typeof(MemberDataAggregator))]
+        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), -1, MemberType = typeof(MemberDataAggregator))]
         public void AddHasMultipleArbitraryCapitalists(MegaCorp megaCorp, ISet<ICapitalist> capitalists)
         {
             foreach (ICapitalist capitalist in capitalists)
@@ -59,15 +52,17 @@ namespace CsharpCollectionsAssignmentTests.tests
                 Assert.True(megaCorp.Add(capitalist), "#Add() returned false when called with a Capitalist");
                 Assert.True(megaCorp.Has(capitalist), "#Has() returned false when called with the Capitalist that was just added");
 
-                while (capitalist.HasParent())
+                ICapitalist parent = capitalist;
+                while (parent.HasParent())
                 {
+                    parent = parent.GetParent();
                     Assert.True(megaCorp.Has(capitalist.GetParent()), "#Has() returned false when called with a parent of the Capitalist that was just added");
                 }
             }
         }
 
         [Theory]
-        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), MemberType = typeof(MemberDataAggregator))]
+        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), -1, MemberType = typeof(MemberDataAggregator))]
         public void AddHasMultipleArbitraryCapitalistNoDuplicates(MegaCorp megaCorp, ISet<ICapitalist> capitalists)
         {
             foreach (ICapitalist capitalist in capitalists)
@@ -90,7 +85,7 @@ namespace CsharpCollectionsAssignmentTests.tests
         {
             ISet<ICapitalist> elements = megaCorp.GetElements();
             Assert.NotNull(elements);
-            Assert.NotEmpty(elements);
+            Assert.Empty(elements);
         }
 
         [Theory]
@@ -105,7 +100,7 @@ namespace CsharpCollectionsAssignmentTests.tests
         }
 
         [Theory]
-        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), MemberType = typeof(MemberDataAggregator))]
+        [MemberData(nameof(MemberDataAggregator.GenerateMegaCorpAndCapitalists), -1, MemberType = typeof(MemberDataAggregator))]
         public void GetElementsMultipleArbitraryCapitalists(MegaCorp megaCorp, ISet<ICapitalist> capitalists)
         {
             ISet<ICapitalist> expected = new HashSet<ICapitalist>(capitalists);
@@ -116,12 +111,13 @@ namespace CsharpCollectionsAssignmentTests.tests
                 ICapitalist parent = capitalist;
                 while (parent != null)
                 {
-                    expected.Add(capitalist);
-                    parent = capitalist.GetParent();
+                    expected.Add(parent);
+                    parent = parent.GetParent();
                 }
             }
             ISet<ICapitalist> elements = megaCorp.GetElements();
-            Assert.Equal(expected, elements);
+
+            Assert.True(expected.SetEquals(elements), "#GetElements() returned a set that did not equal the set of previously-added Capitalists and their parents");
         }
 
         [Theory]
@@ -150,7 +146,7 @@ namespace CsharpCollectionsAssignmentTests.tests
         {
             megaCorp.Add(fatCat);
             ISet<FatCat> parents = megaCorp.GetParents();
-            Assert.Empty(parents);
+            Assert.NotEmpty(parents);
             Assert.Equal(1, parents.Count);
         }
 
@@ -161,7 +157,7 @@ namespace CsharpCollectionsAssignmentTests.tests
             megaCorp.Add(wageSlave);
             FatCat parent = wageSlave.GetParent();
             ISet<FatCat> parents = megaCorp.GetParents();
-            Assert.Empty(parents);
+            Assert.NotEmpty(parents);
             Assert.Equal(1, parents.Count);
             Assert.True(parents.Contains(parent), "#getParents() returned a set that did not contain the parent of the WageSlave added to the MegaCorp");
         }
@@ -182,7 +178,7 @@ namespace CsharpCollectionsAssignmentTests.tests
                 }
             }
             ISet<FatCat> parents = megaCorp.GetParents();
-            Assert.Equal(expected, parents);
+            Assert.True(expected.SetEquals(parents), "#GetParents() returned a set that did not equal the set of all parents of the added Capitalists");
         }
 
         [Theory]
@@ -232,7 +228,8 @@ namespace CsharpCollectionsAssignmentTests.tests
                 megaCorp.Add(withParent);
                 expected.Add(withParent);
             }
-            Assert.Equal(expected, megaCorp.GetChildren(parent));
+
+            Assert.True(expected.SetEquals(megaCorp.GetChildren(parent)), "#GetChildren() returned a set that did not equal the set of children of the previously-added FatCat");
         }
 
         [Theory]
@@ -254,7 +251,7 @@ namespace CsharpCollectionsAssignmentTests.tests
             {
                 megaCorp.Add(looseCapitalist);
             }
-            Assert.Equal(expected, megaCorp.GetChildren(parent));
+            Assert.True(expected.SetEquals(megaCorp.GetChildren(parent)), "#getChildren() returned a set that did not equal the set of children of a previously-added FatCat after adding loose capitalists");
         }
 
         [Theory]
@@ -288,7 +285,9 @@ namespace CsharpCollectionsAssignmentTests.tests
             Assert.False(megaCorp.Has(wageSlave), "#getHierarchy() returned a live map that allowed external changes to the MegaCorp");
 
             hierarchy = megaCorp.GetHierarchy();
-            Assert.NotEqual(children, hierarchy[wageSlave.GetParent()]);
+
+            Assert.False(children.SetEquals(hierarchy.ContainsKey(wageSlave.GetParent()) ? hierarchy[wageSlave.GetParent()] : new HashSet<ICapitalist>()),
+                "#getHierarchy() returned a live map that allowed external changes to the MegaCorp");
             Assert.False(hierarchy.ContainsKey(wageSlave.GetParent()), "#getHierarchy() returned a live map that allowed external changes to the MegaCorp");
 
             megaCorp.Add(wageSlave.GetParent());
@@ -308,8 +307,9 @@ namespace CsharpCollectionsAssignmentTests.tests
             IDictionary<FatCat, ISet<ICapitalist>> hierarchy = megaCorp.GetHierarchy();
             ISet<FatCat> expectedParents = megaCorp.GetParents();
 
-            // hierarchy.Keys here is not necessarily a set (Unlike Java's .keySet()), need to double check this when testing
-            Assert.Equal(expectedParents, hierarchy.Keys);
+            Assert.True(expectedParents.SetEquals(hierarchy.Keys),
+                "#GetHierarchy() returned a map with a key set that did not match the MegaCorp's parents");
+
             ISet<ICapitalist> actualElements = new HashSet<ICapitalist>();
             foreach (FatCat parent in expectedParents)
             {
@@ -319,9 +319,11 @@ namespace CsharpCollectionsAssignmentTests.tests
                 {
                     actualElements.Add(capitalist);
                 }
-                Assert.Equal(expectedChildren, hierarchy[parent]);
+                Assert.True(expectedChildren.SetEquals(hierarchy[parent]),
+                    "#GetHierarchy() returned a map in which a key's associated set of values did not match the MegaCorp's children for that key");
             }
-            Assert.Equal(megaCorp.GetElements(), actualElements);
+            Assert.True(megaCorp.GetElements().SetEquals(actualElements),
+                    "#GetHierarchy() returned a map in which a key's associated set of values did not match the MegaCorp's children for that key");
         }
 
         [Theory]
@@ -343,13 +345,14 @@ namespace CsharpCollectionsAssignmentTests.tests
         {
             megaCorp.Add(capitalist);
             FatCat parent = capitalist.GetParent();
-            IList<FatCat> expected = new List<FatCat>();
+            ISet<FatCat> expected = new HashSet<FatCat>();
             while (parent != null)
             {
                 expected.Add(parent);
                 parent = parent.GetParent();
             }
-            Assert.Equal(expected, megaCorp.GetParentChain(capitalist));
+            Assert.True(expected.SetEquals(megaCorp.GetParentChain(capitalist)),
+                "#GetParentChain() returned a list that did not match the calculated structure of the arbitrary Capitalist that was just added to the MegaCorp");
         }
     }
 }

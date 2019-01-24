@@ -145,7 +145,7 @@ namespace CsharpCollectionsAssignmentTests.generators
             {
                 result.Add(GenerateFatCatAtDepth(depth, parent));
             }
-            return GenerateCapitalists(count, parents);
+            return GenerateCapitalists(count, result);
         }
 
         public static ISet<FatCat> GenerateFatCatsAtDepth(int count, int depth, FatCat parent = null)
@@ -162,7 +162,7 @@ namespace CsharpCollectionsAssignmentTests.generators
             {
                 result.Add(GenerateFatCatAtDepth(depth, parent));
             }
-            return GenerateFatCats(count, parents);
+            return GenerateFatCats(count, result);
         }
 
         public static ISet<WageSlave> GenerateWageSlavesAtDepth(int count, int depth, FatCat parent = null)
@@ -179,7 +179,7 @@ namespace CsharpCollectionsAssignmentTests.generators
             {
                 result.Add(GenerateFatCatAtDepth(depth, parent));
             }
-            return GenerateWageSlaves(count, parents);
+            return GenerateWageSlaves(count, result);
         }
     }
 }

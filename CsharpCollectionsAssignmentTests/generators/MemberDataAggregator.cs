@@ -124,6 +124,18 @@ namespace CsharpCollectionsAssignmentTests.generators
             return list;
         }
 
+        public static IEnumerable<object[]> GenerateMegaCorpAndCapitalists(int capitalistDepth)
+        {
+            capitalistDepth = capitalistDepth >= 0 ? capitalistDepth : GenerateSemiRandomSize();
+
+            List<object[]> list = new List<object[]>
+            {
+                new object[] { MegaCorpGenerator.GenerateMegaCorp(), CapitalistGenerator.GenerateCapitalistsAtDepth(GenerateSemiRandomSize(), capitalistDepth) }
+            };
+
+            return list;
+        }
+
         public static IEnumerable<object[]> GenerateMegaCorpAndFatCatAndCapitalist()
         {
             List<object[]> list = new List<object[]>
@@ -160,7 +172,7 @@ namespace CsharpCollectionsAssignmentTests.generators
          */
         private static int GenerateSemiRandomSize()
         {
-            return random.Next(5, 20);
+            return random.Next(5, 10);
         }
 
     }

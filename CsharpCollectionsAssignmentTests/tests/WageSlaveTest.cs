@@ -28,7 +28,7 @@ namespace CsharpCollectionsAssignmentTests.tests
             Assert.Equal(name, wageSlave.GetName());
             Assert.Equal(salary, wageSlave.GetSalary());
             Assert.Equal(parent, wageSlave.GetParent());
-            Assert.False(wageSlave.HasParent(), "HasParent() did not return true when constructed with an owner");
+            Assert.True(wageSlave.HasParent(), "HasParent() did not return true when constructed with an owner");
         }
 
         [Theory]

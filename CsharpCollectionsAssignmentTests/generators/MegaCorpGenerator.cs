@@ -11,9 +11,10 @@ namespace CsharpCollectionsAssignmentTests.generators
     {
         private static Random random = new Random();
 
-        public static MegaCorp GenerateMegaCorp(int depth = 0, int width = 0, int ratio = 1)
+        public static MegaCorp GenerateMegaCorp(int depth = 0, int width = 0)
         {
-            int size = width + (int)Math.Ceiling(Math.Pow(depth != 0 ? depth : ratio, depth));
+            int ratio = depth; 
+            int size = 1;
 
             MegaCorp megaCorp = new MegaCorp();
             ISet<FatCat> parents = new HashSet<FatCat>();
